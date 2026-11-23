@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f0e8">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg">
+<title>Wear</title>
+<style>
+:root{
+  --bg:#f5f0e8;--card:#fffdf9;--ink:#1d1a16;--mute:#7b7468;--line:#e6dfd2;
+  --accent:#0f5c55;--accent-ink:#fff;--soft:#e4efe9;--warn:#b4531f;--shadow:0 6px 24px rgba(40,30,10,.10);
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --nav:68px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14120f;--card:#1e1b17;--ink:#f3eee5;--mute:#9b9384;--line:#2d2923;
+  --accent:#5fc2b0;--accent-ink:#06201b;--soft:#1b2d29;--warn:#e08a55;--shadow:0 6px 24px rgba(0,0,0,.4);}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px}
+body{min-height:100dvh;padding-bottom:calc(var(--nav) + 24px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;letter-spacing:-.01em}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.wrap{max-width:720px;margin:0 auto;padding:18px 18px 0}
+.hide{display:none!important}
+
+/* header */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:6px 0 16px}
+.top h1{font-size:30px;line-height:1.1}
+.top small{display:block;color:var(--mute);font-size:14px;margin-bottom:4px}
+.wx{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:16px}
+.wx b{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1}
+.wx .meta{font-size:13.5px;color:var(--mute);line-height:1.35}
+.wx .meta span{color:var(--ink)}
+.wx .ico{font-size:30px}
+
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 15px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:14.5px;font-weight:500;color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:16px;background:var(--accent);color:var(--accent-ink);font-weight:650;font-size:17px;box-shadow:var(--shadow)}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{opacity:.6}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.danger{background:none;color:var(--warn);box-shadow:none;border:1px solid var(--line)}
+.btn.small{padding:12px;font-size:15px;border-radius:13px}
+
+/* trends */
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 10px}
+.sec h2{font-size:21px}
+.sec span{color:var(--mute);font-size:13px}
+.trend{flex:none;width:210px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
+.trend b{font-family:var(--serif);font-size:16.5px;display:block;margin-bottom:5px}
+.trend p{margin:0;font-size:13.5px;color:var(--mute);line-height:1.4}
+
+/* looks */
+.looks{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 18px;scrollbar-width:none}
+.looks::-webkit-scrollbar{display:none}
+.look{flex:none;width:min(86vw,360px);scroll-snap-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow)}
+.look h3{font-size:22px;margin:4px 4px 10px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;background:#fff}
+.tiles .tile:last-child:nth-child(odd){grid-column:1/-1;aspect-ratio:2/1}
+.tile img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
+.tile.own img{object-fit:cover}
+.tile i{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:11.5px;background:rgba(20,18,15,.72);color:#fff;padding:3px 8px;border-radius:999px;max-width:calc(100% - 12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.why{margin:12px 4px 8px;font-size:14.5px;line-height:1.45;color:var(--mute)}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;margin:0 4px 10px}
+.skel{height:380px;border-radius:24px;background:linear-gradient(100deg,var(--card) 30%,var(--line) 50%,var(--card) 70%);background-size:300% 100%;animation:sh 1.3s infinite linear;border:1px solid var(--line)}
+@keyframes sh{from{background-position:100% 0}to{background-position:-100% 0}}
+
+/* library */
+.search{width:100%;padding:13px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-align:left;box-shadow:var(--shadow)}
+.card .ph{position:relative;aspect-ratio:1;background:#fff}
+.card .ph img{width:100%;height:100%;object-fit:contain;display:block}
+.card .ph.own img{object-fit:cover}
+.card .nm{padding:9px 11px 11px;font-size:14px;line-height:1.3;font-weight:550}
+.card .nm small{display:block;color:var(--mute);font-weight:400;margin-top:2px;font-size:12px}
+.badge{position:absolute;left:8px;top:8px;font-size:11px;font-weight:650;padding:3px 8px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.badge.o{background:rgba(20,18,15,.72);color:#fff}
+.badge.w{background:var(--warn);color:#fff}
+.busy{position:absolute;inset:0;display:grid;place-items:center;background:rgba(245,240,232,.55);backdrop-filter:blur(2px);font-size:13px;font-weight:600;color:#1d1a16;text-align:center;padding:10px}
+.spin{width:22px;height:22px;border:3px solid rgba(0,0,0,.15);border-top-color:var(--accent);border-radius:50%;animation:rot .8s infinite linear;margin:0 auto 6px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.empty{text-align:center;color:var(--mute);padding:42px 22px;line-height:1.5}
+.empty b{display:block;font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:6px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;z-index:20}
+.nav .t{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:600;color:var(--mute);padding:8px}
+.nav .t svg{width:24px;height:24px}
+.nav .t.on{color:var(--accent)}
+.fab{width:68px;height:68px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin:-34px auto 0;box-shadow:0 8px 24px rgba(15,92,85,.45);border:5px solid var(--bg)}
+.fab svg{width:30px;height:30px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(10,8,5,.5);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--bg);border-radius:26px 26px 0 0;max-height:92dvh;overflow:auto;transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1);padding:10px 18px calc(22px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+.sheet.on{transform:none}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+.big{aspect-ratio:1;border-radius:20px;overflow:hidden;background:#fff;margin-bottom:12px}
+.big img{width:100%;height:100%;object-fit:contain;display:block}
+.big.own img{object-fit:cover}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:4px;margin-bottom:12px}
+.seg button{padding:10px;border-radius:10px;font-weight:600;font-size:14.5px;color:var(--mute)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.field{display:block;margin:10px 0}
+.field span{display:block;font-size:12.5px;color:var(--mute);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.note{font-size:13.5px;color:var(--mute);line-height:1.45;margin:8px 2px}
+.note a{color:var(--accent)}
+.opt{display:flex;flex-direction:column;gap:10px}
+.opt .btn{justify-content:flex-start;padding:18px}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 26px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:14.5px;font-weight:550;opacity:0;transition:.25s;z-index:50;max-width:88vw;text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* login */
+.login{min-height:100dvh;display:grid;place-items:center;padding:24px}
+.login .box{width:100%;max-width:360px;text-align:center}
+.login h1{font-size:44px;margin-bottom:6px}
+.login p{color:var(--mute);margin:0 0 22px;line-height:1.45}
+.login input{width:100%;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;text-align:center;margin-bottom:12px}
+.err{color:var(--warn);font-size:14px;margin-top:10px;min-height:20px}
+
+/* tv */
+body.tv{padding:0;background:#0f0d0a;color:#f3eee5;overflow:hidden}
+.tvw{height:100dvh;display:grid;grid-template-columns:1.15fr 1fr;gap:4vw;padding:5vh 5vw;align-items:center}
+.tvw .tiles{gap:1.4vw;grid-template-columns:1fr 1fr}
+.tvw .tile{border-radius:2vw}
+.tvw .tile i{font-size:1.5vw;padding:.4vw 1vw}
+.tvw h1{font-size:5vw;line-height:1.05;margin-bottom:1.6vh}
+.tvw .wxl{font-size:2.4vw;color:#cfc7b8;margin-bottom:3vh}
+.tvw .why{font-size:2.1vw;line-height:1.4;color:#d8d0c1;margin:0 0 2.5vh}
+.tvw .tag{font-size:1.6vw;margin:0 0 2vh;background:#1b2d29;color:#5fc2b0}
+.tvw .dots{display:flex;gap:1vw;margin-top:3vh}
+.tvw .dots i{width:1.6vw;height:1.6vw;border-radius:50%;background:#3a352d}
+.tvw .dots i.on{background:#5fc2b0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="cam" accept="image/*" capture="environment" hidden>
+<input type="file" id="gal" accept="image/*" multiple hidden>
+<input type="file" id="meFile" accept="image/*" hidden>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ICON = {
+  today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg>',
+  lib: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v7H4zM14 4h6v7h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>',
+  cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>',
+};
+const CATS = { top: 'Tops', bottom: 'Bottoms', outer: 'Outerwear', shoes: 'Shoes', full: 'Thobes & one-pieces', accessory: 'Accessories' };
+const OCC = { casual: 'Casual', work: 'Work', formal: 'Formal', evening: 'Evening out' };
+
+const S = { tab: 'today', items: [], filter: 'all', q: '', occ: 'casual', weather: null, trends: null, looks: null, busy: false, authed: false, me: null, profile: { photo: null } };
+let poll = null;
+
+async function api(p, o = {}) {
+  const r = await fetch('/api' + p, {
+    credentials: 'same-origin',
+    method: o.method || (o.body ? 'POST' : 'GET'),
+    headers: o.body ? { 'content-type': 'application/json' } : {},
+    body: o.body ? JSON.stringify(o.body) : undefined,
+  });
+  if (r.status === 401 && p !== '/login') { S.authed = false; render(); throw new Error('Sign in required'); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'Something went wrong (' + r.status + ')');
+  return j;
+}
+function toast(msg, ms = 2600) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms);
+}
+const disp = (it) => (it.usePhoto === 'catalog' && it.catalog ? { src: it.catalog.img, own: false } : it.usePhoto === 'cutout' && it.cutout ? { src: it.cutout, own: false } : { src: it.own, own: true });
+const tryOK = () => !!(S.me && S.me.setup && S.me.setup.tryon);
+const byId = (id) => S.items.find((i) => i.id === id);
+
+/* ---------- views ---------- */
+function render() {
+  document.body.classList.toggle('tv', location.hash === '#tv');
+  const app = $('#app');
+  if (!S.me) { app.innerHTML = ''; return; }
+  if (!S.authed) return renderLogin(app);
+  if (location.hash === '#tv') return renderTV(app);
+  app.innerHTML = (S.tab === 'today' ? viewToday() : viewLib()) + nav();
+  bind(app);
+}
+function renderLogin(app) {
+  const setup = S.me.setup;
+  app.innerHTML = `<div class="login"><div class="box">
+    <h1>Wear</h1><p>Your closet, styled for ${esc(S.me.place)}.</p>
+    ${setup.passcode ? `<input id="code" type="password" inputmode="text" autocomplete="current-password" placeholder="Passcode" autofocus>
+    <button class="btn" id="go">Open my closet</button><div class="err" id="err"></div>`
+      : `<div class="err">This server needs an APP_PASSCODE environment variable set in Coolify before it can be used.</div>`}
+  </div></div>`;
+  const go = async () => {
+    $('#err').textContent = '';
+    try { await api('/login', { body: { code: $('#code').value } }); S.authed = true; await boot(); }
+    catch (e) { $('#err').textContent = e.message; }
+  };
+  $('#go')?.addEventListener('click', go);
+  $('#code')?.addEventListener('keydown', (e) => e.key === 'Enter' && go());
+}
+function nav() {
+  return `<nav class="nav">
+    <button class="t ${S.tab === 'today' ? 'on' : ''}" data-tab="today">${ICON.today}Today</button>
+    <button class="fab" id="add" aria-label="Add a piece">${ICON.cam}</button>
+    <button class="t ${S.tab === 'lib' ? 'on' : ''}" data-tab="lib">${ICON.lib}Closet</button>
+  </nav>`;
+}
+function wxIcon(c) {
+  if (c == null) return '☀️';
+  if (c === 0) return '☀️'; if (c <= 2) return '🌤️'; if (c === 3) return '☁️';
+  if (c >= 45 && c <= 48) return '🌫️'; if (c >= 51 && c <= 67) return '🌧️';
+  if (c >= 95) return '⛈️'; return '⛅';
+}
+function hello() {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+function viewToday() {
+  const w = S.weather;
+  const ready = S.items.filter((i) => i.status === 'ready').length;
+  return `<div class="wrap">
+    <div class="top"><div><small>${hello()}</small><h1>What to wear today</h1></div>${tryOK() ? `<button class="chip" id="me">${S.profile.photo ? 'My photo' : 'Add my photo'}</button>` : ''}</div>
+    ${w ? `<div class="wx"><div class="ico">${wxIcon(w.code)}</div><b>${w.temp}°</b>
+      <div class="meta"><span>${esc(w.place)}</span> · feels ${w.feels}°<br>High ${w.high}° · Humidity ${w.humidity}%${w.rain > 20 ? ' · Rain ' + w.rain + '%' : ''}</div></div>` : ''}
+    <div class="chips" id="occ">${Object.entries(OCC).map(([k, v]) => `<button class="chip ${S.occ === k ? 'on' : ''}" data-occ="${k}">${v}</button>`).join('')}</div>
+    <div style="height:12px"></div>
+    <button class="btn" id="style" ${S.busy ? 'disabled' : ''}>${S.busy ? 'Styling…' : S.looks ? 'Style me again' : 'Style me'}</button>
+    ${S.busy ? '<div style="height:16px"></div><div class="skel"></div>' : ''}
+    ${!S.busy && !S.looks ? `<div class="empty"><b>${ready < 3 ? 'Start your closet' : 'Ready when you are'}</b>${ready < 3 ? 'Tap the camera button and photograph a shirt, a pair of trousers and some shoes. I will find the official product photo for each.' : 'Pick an occasion and tap Style me. I match your closet to today’s weather and the latest trends.'}</div>` : ''}
+    ${S.looks ? `<div style="height:16px"></div><div class="looks">${S.looks.map(lookCard).join('')}</div>` : ''}
+    ${S.trends?.trends?.length ? `<div class="sec"><h2>Trending now</h2><span>${esc((S.trends.summary || '').slice(0, 0))}updated ${new Date(S.trends.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span></div>
+      <div class="chips">${S.trends.trends.map((t) => `<div class="trend"><b>${esc(t.name)}</b><p>${esc(t.note)}</p></div>`).join('')}</div>` : ''}
+  </div>`;
+}
+function tile(it) {
+  const d = disp(it);
+  return `<div class="tile ${d.own ? 'own' : ''}"><img src="${esc(d.src)}" alt="" loading="lazy"><i>${esc(it.name)}</i></div>`;
+}
+function lookCard(l, idx) {
+  const its = l.itemIds.map(byId).filter(Boolean);
+  return `<div class="look"><h3>${esc(l.title)}</h3><div class="tiles">${its.map(tile).join('')}</div>
+    <p class="why">${esc(l.why)}</p>${l.trend ? `<span class="tag">Trend: ${esc(l.trend)}</span>` : ''}
+    <div class="row" style="margin-top:4px"><button class="btn small ghost" data-wore="${idx}">I wore this</button>${tryOK() ? `<button class="btn small" data-try="${idx}">Try it on me</button>` : ''}</div></div>`;
+}
+function viewLib() {
+  const q = S.q.toLowerCase();
+  const list = S.items.filter((i) => (S.filter === 'all' || i.category === S.filter) && (!q || (i.name + ' ' + i.colors.join(' ') + ' ' + (i.brand || '')).toLowerCase().includes(q)));
+  const counts = {}; S.items.forEach((i) => (counts[i.category] = (counts[i.category] || 0) + 1));
+  return `<div class="wrap">
+    <div class="top"><div><small>${S.items.length} piece${S.items.length === 1 ? '' : 's'}</small><h1>Your closet</h1></div></div>
+    <input class="search" id="q" placeholder="Search by name, colour or brand" value="${esc(S.q)}">
+    <div class="chips"><button class="chip ${S.filter === 'all' ? 'on' : ''}" data-f="all">All</button>${Object.entries(CATS).filter(([k]) => counts[k]).map(([k, v]) => `<button class="chip ${S.filter === k ? 'on' : ''}" data-f="${k}">${v} · ${counts[k]}</button>`).join('')}</div>
+    ${list.length ? `<div class="grid">${list.map(card).join('')}</div>` : `<div class="empty"><b>${S.items.length ? 'Nothing matches' : 'Your closet is empty'}</b>${S.items.length ? 'Try another search or filter.' : 'Tap the camera button to add your first piece. Take a flat, well-lit photo of one item at a time.'}</div>`}
+  </div>`;
+}
+function card(it) {
+  const d = disp(it);
+  const busy = it.status === 'analyzing' || it.status === 'finding';
+  const badge = busy ? '' : it.status === 'error' ? '<span class="badge w">Needs retry</span>'
+    : d.own ? (it.catalog ? '<span class="badge o">Your photo</span>' : '<span class="badge o">Your photo</span>')
+      : `<span class="badge">${it.catalog.matchType === 'exact' ? 'Official photo' : 'Similar photo'}</span>`;
+  return `<button class="card" data-open="${it.id}"><div class="ph ${d.own ? 'own' : ''}"><img src="${esc(d.src)}" alt="" loading="lazy">${badge}
+    ${busy ? `<div class="busy"><div><div class="spin"></div>${it.status === 'analyzing' ? 'Looking at it…' : 'Finding official photo…'}</div></div>` : ''}</div>
+    <div class="nm">${esc(it.name)}<small>${esc(it.colors[0] || '')}${it.brand ? ' · ' + esc(it.brand) : ''}</small></div></button>`;
+}
+function renderTV(app) {
+  const w = S.weather, L = S.looks || [];
+  const l = L[S.tvi || 0];
+  if (!l) { app.innerHTML = `<div class="tvw"><div><h1>Getting your look…</h1></div></div>`; return; }
+  const its = l.itemIds.map(byId).filter(Boolean);
+  app.innerHTML = `<div class="tvw"><div class="tiles">${its.slice(0, 4).map(tile).join('')}</div>
+    <div><h1>${esc(l.title)}</h1>${w ? `<div class="wxl">${wxIcon(w.code)} ${w.temp}° in ${esc(w.place)} · feels ${w.feels}° · humidity ${w.humidity}%</div>` : ''}
+    <p class="why">${esc(l.why)}</p>${l.trend ? `<span class="tag">Trend: ${esc(l.trend)}</span>` : ''}
+    <div class="dots">${L.map((_, i) => `<i class="${i === (S.tvi || 0) ? 'on' : ''}"></i>`).join('')}</div></div></div>`;
+}
+
+/* ---------- interactions ---------- */
+function bind(root) {
+  root.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => { S.tab = b.dataset.tab; scrollTo(0, 0); render(); });
+  $('#add')?.addEventListener('click', openAdd);
+  root.querySelectorAll('[data-occ]').forEach((b) => b.onclick = () => { S.occ = b.dataset.occ; S.looks = null; render(); });
+  $('#style')?.addEventListener('click', style);
+  $('#me')?.addEventListener('click', () => openMe());
+  root.querySelectorAll('[data-try]').forEach((b) => b.onclick = () => tryOn(+b.dataset.try));
+  root.querySelectorAll('[data-wore]').forEach((b) => b.onclick = () => wore(+b.dataset.wore, b));
+  root.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { S.filter = b.dataset.f; render(); });
+  root.querySelectorAll('[data-open]').forEach((b) => b.onclick = () => openItem(b.dataset.open));
+  const q = $('#q');
+  if (q) q.oninput = () => { S.q = q.value; const pos = q.selectionStart; render(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
+}
+async function style() {
+  S.busy = true; render();
+  try {
+    const r = await api('/outfits', { body: { occasion: S.occ, weather: S.weather || undefined } });
+    S.looks = r.looks; if (r.weather) S.weather = r.weather;
+  } catch (e) { toast(e.message, 4000); }
+  S.busy = false; render();
+}
+async function wore(i, btn) {
+  const l = S.looks[i]; if (!l) return;
+  try { await api('/worn', { body: { ids: l.itemIds } }); btn.textContent = 'Logged ✓'; btn.disabled = true; toast('Got it. I will rotate these out for a few days.'); }
+  catch (e) { toast(e.message); }
+}
+function openSheet(html) { const s = $('#sheet'); s.innerHTML = '<div class="grab"></div>' + html; requestAnimationFrame(() => { s.classList.add('on'); $('#scrim').classList.add('on'); }); }
+function closeSheet() { $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); }
+$('#scrim').onclick = closeSheet;
+
+function openAdd() {
+  openSheet(`<h2 style="margin:4px 0 14px">Add a piece</h2><div class="opt">
+    <button class="btn" id="o-cam">${ICON.cam.replace('<svg', '<svg width="24" height="24"')} Take a photo</button>
+    <button class="btn ghost" id="o-gal">Choose from gallery (several at once)</button></div>
+    <p class="note">Tip: lay the item flat on a plain background in good light, one piece per photo. If a logo or label is visible, include it. That is how I find the exact product.</p>`);
+  $('#o-cam').onclick = () => { closeSheet(); $('#cam').click(); };
+  $('#o-gal').onclick = () => { closeSheet(); $('#gal').click(); };
+}
+function shrink(file, max = 1280) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file); const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height));
+      const c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.84));
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not read that photo')); };
+    im.src = url;
+  });
+}
+async function upload(files) {
+  files = [...files]; if (!files.length) return;
+  S.tab = 'lib'; render();
+  let ok = 0;
+  for (const f of files) {
+    try { const data = await shrink(f); const it = await api('/items', { body: { image: data } }); S.items.unshift(it); ok++; render(); }
+    catch (e) { toast(e.message, 3500); }
+  }
+  if (ok) { toast(ok === 1 ? 'Added. Finding the official photo…' : `Added ${ok} pieces. Finding official photos…`); startPoll(); }
+}
+$('#cam').onchange = (e) => { upload(e.target.files); e.target.value = ''; };
+$('#gal').onchange = (e) => { upload(e.target.files); e.target.value = ''; };
+
+function openItem(id) {
+  const it = byId(id); if (!it) return;
+  const busy = it.status === 'analyzing' || it.status === 'finding';
+  const d = disp(it);
+  openSheet(`<div class="big ${d.own ? 'own' : ''}"><img src="${esc(d.src)}" alt=""></div>
+    ${(() => { const o = []; if (it.catalog) o.push(['catalog', it.catalog.matchType === 'exact' ? 'Official' : 'Similar']); if (it.cutout) o.push(['cutout', 'Cutout']); o.push(['own', 'My photo']);
+      return o.length > 1 ? `<div class="seg" style="grid-template-columns:repeat(${o.length},1fr)">${o.map(([k, v]) => `<button data-p="${k}" class="${it.usePhoto === k ? 'on' : ''}">${v}</button>`).join('')}</div>` : ''; })()}
+    ${it.catalog ? `<p class="note">${it.catalog.matchType === 'exact' ? 'Matched' : 'Closest match'} from <a href="${esc(it.catalog.url)}" target="_blank" rel="noopener noreferrer">${esc(it.catalog.host)}</a>${it.catalog.matchType === 'similar' ? '. Not guaranteed to be your exact item, so check it before switching.' : '.'}</p>` : ''}
+    ${it.error ? `<p class="note" style="color:var(--warn)">${esc(it.error)}</p>` : ''}
+    <label class="field"><span>Name</span><input id="e-name" value="${esc(it.name)}" maxlength="80"></label>
+    <label class="field"><span>Type</span><select id="e-cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${it.category === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <div class="row"><button class="btn small" id="e-save">Save</button><button class="btn small ghost" id="e-find" ${busy ? 'disabled' : ''}>${busy ? 'Working…' : 'Find photo again'}</button></div>
+    ${tryOK() && !it.cutout ? `<div class="row" style="grid-template-columns:1fr"><button class="btn small ghost" id="e-cut">Clean up my photo (remove background)</button></div>` : ''}
+    <div class="row"><button class="btn small danger" id="e-del">Remove</button><button class="btn small ghost" id="e-close">Close</button></div>`);
+  $('#sheet').querySelectorAll('[data-p]').forEach((b) => b.onclick = async () => { await api('/items/' + id, { method: 'PATCH', body: { usePhoto: b.dataset.p } }); await refresh(); openItem(id); });
+  $('#e-save').onclick = async () => { await api('/items/' + id, { method: 'PATCH', body: { name: $('#e-name').value, category: $('#e-cat').value } }); await refresh(); closeSheet(); toast('Saved'); };
+  $('#e-find').onclick = async () => { await api('/items/' + id + '/refind', { method: 'POST', body: {} }); await refresh(); closeSheet(); startPoll(); toast('Searching again…'); };
+  $('#e-cut')?.addEventListener('click', async (ev) => { ev.target.disabled = true; ev.target.textContent = 'Cleaning up…'; try { await api('/items/' + id + '/cutout', { method: 'POST', body: {} }); await refresh(); openItem(id); toast('Done. Using the clean cutout.'); } catch (e) { toast(e.message, 3500); openItem(id); } });
+  $('#e-del').onclick = async () => { if (!confirm('Remove this piece from your closet?')) return; await api('/items/' + id, { method: 'DELETE' }); S.looks = null; await refresh(); closeSheet(); };
+  $('#e-close').onclick = closeSheet;
+}
+
+async function refresh() { S.items = await api('/items'); if (location.hash !== '#tv') render(); }
+function startPoll() {
+  clearInterval(poll);
+  poll = setInterval(async () => {
+    try { await refresh(); } catch { return; }
+    if (!S.items.some((i) => i.status === 'analyzing' || i.status === 'finding')) { clearInterval(poll); poll = null; }
+  }, 2500);
+}
+
+/* ---------- try-on ---------- */
+function openMe(after) {
+  const has = !!S.profile.photo;
+  openSheet(`<h2 style="margin:4px 0 10px">${has ? 'Your try-on photo' : 'Add your photo'}</h2>
+    ${has ? `<div class="big"><img src="${esc(S.profile.photo)}" alt=""></div>` : ''}
+    <p class="note">For the best result: stand straight, full body from head to feet, good light, plain wall, fitted clothes. The photo stays on your own server. It is sent to the try-on service only when you tap Try it on me.</p>
+    <div class="opt"><button class="btn" id="me-pick">${has ? 'Replace photo' : 'Take or choose a photo'}</button><button class="btn ghost" id="me-x">Cancel</button></div>`);
+  $('#me-pick').onclick = () => { S.afterMe = after || null; $('#meFile').click(); };
+  $('#me-x').onclick = closeSheet;
+}
+$('#meFile').onchange = async (e) => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const r = await api('/profile/photo', { body: { image: await shrink(f, 1400) } });
+    S.profile.photo = r.photo; closeSheet(); render(); toast('Saved your photo');
+    const a = S.afterMe; S.afterMe = null; if (a) setTimeout(a, 300);
+  } catch (err) { toast(err.message, 3500); }
+};
+async function tryOn(idx) {
+  const l = S.looks && S.looks[idx]; if (!l) return;
+  if (!S.profile.photo) return openMe(() => tryOn(idx));
+  openSheet(`<h2 style="margin:4px 0 12px">${esc(l.title)}</h2><div id="tr"><div class="skel" style="height:320px"></div><p class="note" id="trs">Starting…</p></div>`);
+  try {
+    let j = await api('/tryon', { body: { itemIds: l.itemIds } });
+    while (j.status === 'working') {
+      const s = $('#trs'); if (!s) return; s.textContent = `Dressing you… piece ${Math.max(1, j.step)} of ${j.total}. This takes about ${Math.max(1, j.total) * 20} seconds.`;
+      await new Promise((r) => setTimeout(r, 2500)); j = await api('/tryon/' + j.id);
+    }
+    if (j.status !== 'done') throw new Error(j.error || 'Try-on failed');
+    const box = $('#tr'); if (!box) return;
+    box.innerHTML = `<div class="big"><img src="${esc(j.img)}" alt=""></div>
+      <div class="row"><a class="btn small ghost" href="${esc(j.img)}" download="try-on.png">Save image</a><button class="btn small" id="tr-ok">Done</button></div>
+      <p class="note">AI preview. Colours and fit are approximate.</p>`;
+    $('#tr-ok').onclick = closeSheet;
+  } catch (e) { const box = $('#tr'); if (box) box.innerHTML = `<p class="note" style="color:var(--warn)">${esc(e.message)}</p><button class="btn small ghost" id="tr-ok">Close</button>`; $('#tr-ok')?.addEventListener('click', closeSheet); }
+}
+async function loadProfile() { try { S.profile = await api('/profile'); } catch {} }
+
+/* ---------- boot ---------- */
+async function loadWeather() { try { S.weather = await api('/weather'); } catch {} }
+async function loadTrends() { try { S.trends = await api('/trends'); render(); } catch {} }
+async function boot() {
+  await Promise.all([refresh(), loadWeather(), loadProfile()]);
+  render();
+  if (S.items.some((i) => i.status === 'analyzing' || i.status === 'finding')) startPoll();
+  loadTrends();
+  if (location.hash === '#tv') tvLoop();
+}
+async function tvLoop() {
+  const occ = new URLSearchParams(location.search).get('occ') || 'casual';
+  const go = async () => {
+    try { await loadWeather(); const r = await api('/outfits', { body: { occasion: occ, weather: S.weather || undefined } }); S.looks = r.looks; S.tvi = 0; render(); } catch {}
+  };
+  await go();
+  setInterval(() => { if (S.looks?.length) { S.tvi = ((S.tvi || 0) + 1) % S.looks.length; render(); } }, 20000);
+  setInterval(go, 45 * 60000);
+}
+window.addEventListener('hashchange', () => location.reload());
+(async () => {
+  try { S.me = await (await fetch('/api/me', { credentials: 'same-origin' })).json(); S.authed = S.me.authed; }
+  catch { document.body.textContent = 'Cannot reach the server.'; return; }
+  if (S.authed) await boot(); else render();
+})();
+</script>
+</body>
+</html>

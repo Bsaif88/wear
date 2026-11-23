@@ -236,15 +236,22 @@ async function analyze(it) {
   return a;
 }
 
+const BRAND_SITES = {
+  zara: 'zara.com', 'h&m': 'hm.com', hm: 'hm.com', nike: 'nike.com', prada: 'prada.com', uniqlo: 'uniqlo.com', muji: 'muji.com',
+  adidas: 'adidas.com', mango: 'mango.com', 'massimo dutti': 'massimodutti.com', cos: 'cos.com', 'polo ralph lauren': 'ralphlauren.com',
+  'ralph lauren': 'ralphlauren.com', 'tommy hilfiger': 'tommy.com', 'calvin klein': 'calvinklein.com', gucci: 'gucci.com', puma: 'puma.com',
+  'new balance': 'newbalance.com', 'levi\'s': 'levi.com', levis: 'levi.com', gap: 'gap.com', 'banana republic': 'bananarepublic.com',
+};
 async function findPhoto(it) {
   const a = it.analysis;
+  const site = BRAND_SITES[String(a.brand || '').trim().toLowerCase()];
   const desc = [a.brand, a.modelName, a.name, a.colors.join('/'), a.pattern, a.fabric].filter(Boolean).join(', ');
   const text = await claude({
     system: 'You find official product pages. Use web search. Never invent URLs: only return pages you actually found.',
     content: `Today is ${today()}. Find the product page (brand website or a reputable retailer) for this item so I can use its official studio photo.
 Item described from my own photo: ${desc}
 Search hint: ${a.searchQuery || a.name}
-If the brand is not identifiable, find the closest visually matching specific product and mark it "similar".
+${a.brand ? `Brand: ${a.brand}${it.brandLocked ? ' (confirmed by the owner)' : ''}. Look on the official ${a.brand} website${site ? ' (' + site + ')' : ''} first, then reputable retailers. Prefer a clean front-facing studio product photo.\n` : ''}If the brand is not identifiable, find the closest visually matching specific product and mark it "similar".
 Reply with ONLY JSON: {"matchType":"exact"|"similar","candidates":[{"url":"https://...","title":"..."}]}
 Up to 4 individual product pages (not search or category pages), best first. Use "exact" only if brand AND model/style clearly match.`,
     tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 4 }],
@@ -426,6 +433,7 @@ app.patch('/api/items/:id', async (req, res) => {
   const b = req.body || {};
   if (typeof b.name === 'string' && b.name.trim()) it.name = b.name.trim().slice(0, 80);
   if (CATS.includes(b.category)) it.category = b.category;
+  if (typeof b.brand === 'string' && it.analysis) { const v = b.brand.trim().slice(0, 40); it.analysis.brand = v || null; it.brandLocked = !!v; }
   if (b.usePhoto === 'own' || (b.usePhoto === 'catalog' && it.catalog) || (b.usePhoto === 'cutout' && it.cutout)) it.usePhoto = b.usePhoto;
   await save();
   res.json(shape(it));
@@ -444,6 +452,7 @@ app.post('/api/items/:id/refind', async (req, res) => {
   const it = db.items.find((x) => x.id === req.params.id);
   if (!it) return res.sendStatus(404);
   if (it.status === 'analyzing' || it.status === 'finding') return res.json(shape(it));
+  if (typeof req.body?.brand === 'string' && it.analysis) { const v = req.body.brand.trim().slice(0, 40); it.analysis.brand = v || null; it.brandLocked = !!v; }
   it.status = it.analysis ? 'finding' : 'analyzing';
   it.error = null;
   await save();

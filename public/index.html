@@ -13,7 +13,7 @@
 <style>
 :root{
   --ink:#0E0F13;--paper:#F5F3EE;--bg:#F5F3EE;--card:#FFFFFF;--mute:#5E6068;--line:#E4E0D6;
-  --lime:#D6FF3A;--orange:#FF5B2E;--soft:#EDEAE2;--warn:#C23B12;
+  --studio:#F1EFE9;--lime:#D6FF3A;--orange:#FF5B2E;--soft:#EDEAE2;--warn:#C23B12;
   --shadow:0 10px 30px rgba(14,15,19,.08);
   --serif:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --sans:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
@@ -65,10 +65,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .look{flex:none;width:min(86vw,360px);scroll-snap-align:center;background:var(--card);border-radius:30px;padding:16px;box-shadow:var(--shadow)}
 .look h3{font-size:24px;margin:4px 4px 12px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tile{position:relative;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.tile{position:relative;aspect-ratio:1;border-radius:20px;overflow:hidden;background:var(--studio);box-shadow:inset 0 0 0 1px rgba(14,15,19,.05)}
 .tiles .tile:last-child:nth-child(odd){grid-column:1/-1;aspect-ratio:2/1}
-.tile img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
-.tile.own img{object-fit:cover}
+.tile img{width:100%;height:100%;object-fit:contain;display:block;padding:9%;mix-blend-mode:multiply}
+.tile.own img{object-fit:cover;padding:0;mix-blend-mode:normal}
 .tile i{position:absolute;left:8px;bottom:8px;font-style:normal;font-size:11.5px;font-weight:600;background:rgba(14,15,19,.78);color:#fff;padding:4px 9px;border-radius:999px;max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .why{margin:12px 4px 8px;font-size:14.5px;line-height:1.5;color:var(--mute)}
 .tag{display:inline-block;background:var(--lime);color:var(--ink);font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;margin:0 4px 12px}
@@ -80,11 +80,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 @media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
 .card{background:var(--card);border-radius:24px;overflow:hidden;text-align:left;box-shadow:var(--shadow)}
-.card .ph{position:relative;aspect-ratio:1;background:#fff}
-.card .ph img{width:100%;height:100%;object-fit:contain;display:block}
-.card .ph.own img{object-fit:cover}
+.card .ph{position:relative;aspect-ratio:1;background:var(--studio)}
+.card .ph img{width:100%;height:100%;object-fit:contain;display:block;padding:10%;mix-blend-mode:multiply}
+.card .ph.own img{object-fit:cover;padding:0;mix-blend-mode:normal}
 .card .nm{padding:10px 13px 13px;font-size:14.5px;line-height:1.3;font-weight:600}
 .card .nm small{display:block;color:var(--mute);font-weight:500;margin-top:3px;font-size:12.5px}
+.card .nm em{display:block;font-style:normal;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:3px}
+.card .nm em.none{color:var(--mute);font-weight:600}
 .badge{position:absolute;left:9px;top:9px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:999px;background:var(--ink);color:var(--lime)}
 .badge.o{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(14,15,19,.15)}
 .badge.s{background:var(--orange);color:var(--ink)}
@@ -110,9 +112,20 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .sheet.on{transform:none}
 .sheet h2{font-size:26px}
 .grab{width:42px;height:5px;border-radius:9px;background:#CFCBC0;margin:0 auto 14px}
-.big{aspect-ratio:1;border-radius:26px;overflow:hidden;background:#fff;margin-bottom:12px;box-shadow:var(--shadow)}
-.big img{width:100%;height:100%;object-fit:contain;display:block}
-.big.own img{object-fit:cover}
+.big{aspect-ratio:1;border-radius:26px;overflow:hidden;background:var(--studio);margin-bottom:12px;box-shadow:var(--shadow)}
+.big img{width:100%;height:100%;object-fit:contain;display:block;padding:8%;mix-blend-mode:multiply}
+.big.own img{object-fit:cover;padding:0;mix-blend-mode:normal}
+.shops{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.shops button{height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-size:14px;font-weight:600}
+.shops button.on{background:var(--lime);border-color:var(--ink)}
+/* flat-lay look */
+.flat{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flat .tile.hero{aspect-ratio:4/5}
+.flat .small{grid-column:1/-1;display:grid;gap:8px;grid-auto-flow:column;grid-auto-columns:1fr}
+.flat .small .tile{aspect-ratio:1.25}
+.flat .small .tile:only-child{aspect-ratio:2.6}
+.flat .small .tile:only-child img{object-fit:contain}
+.tile b{position:absolute;left:8px;top:8px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);opacity:.7}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px;margin-bottom:12px}
 .seg button{padding:11px;border-radius:999px;font-weight:700;font-size:14.5px;color:var(--mute)}
 .seg button.on{background:var(--ink);color:var(--lime)}
@@ -262,13 +275,21 @@ function viewToday() {
       <div class="chips">${S.trends.trends.map((t) => `<div class="trend"><b>${esc(t.name)}</b><p>${esc(t.note)}</p></div>`).join('')}</div>` : ''}
   </div>`;
 }
-function tile(it) {
+function tile(it, cls = '') {
   const d = disp(it);
-  return `<div class="tile ${d.own ? 'own' : ''}"><img src="${esc(d.src)}" alt="" loading="lazy"><i>${esc(it.name)}</i></div>`;
+  return `<div class="tile ${d.own ? 'own' : ''} ${cls}"><img src="${esc(d.src)}" alt="" loading="lazy">${it.brand ? `<b>${esc(it.brand)}</b>` : ''}<i>${esc(it.name)}</i></div>`;
+}
+const SLOT = { full: 0, outer: 1, top: 2, bottom: 3, shoes: 4, accessory: 5 };
+function flat(its) {
+  its = [...its].sort((a, b) => (SLOT[a.category] ?? 9) - (SLOT[b.category] ?? 9));
+  const big = its.filter((i) => ['full', 'outer', 'top', 'bottom'].includes(i.category)).slice(0, 2);
+  const rest = its.filter((i) => !big.includes(i));
+  if (big.length === 1 && !rest.length) return `<div class="tiles">${tile(big[0])}</div>`;
+  return `<div class="flat">${big.map((i) => tile(i, 'hero')).join('')}${rest.length ? `<div class="small">${rest.slice(0, 3).map((i) => tile(i)).join('')}</div>` : ''}</div>`;
 }
 function lookCard(l, idx) {
   const its = l.itemIds.map(byId).filter(Boolean);
-  return `<div class="look"><h3>${esc(l.title)}</h3><div class="tiles">${its.map(tile).join('')}</div>
+  return `<div class="look"><h3>${esc(l.title)}</h3>${flat(its)}
     <p class="why">${esc(l.why)}</p>${l.trend ? `<span class="tag">Trend: ${esc(l.trend)}</span>` : ''}
     <div class="row" style="margin-top:4px"><button class="btn small ghost" data-wore="${idx}">I wore this</button>${tryOK() ? `<button class="btn small" data-try="${idx}">Try it on me</button>` : ''}</div></div>`;
 }
@@ -292,7 +313,7 @@ function card(it) {
       : it.catalog.matchType === 'exact' ? '<span class="badge">Official</span>' : '<span class="badge s">Similar</span>';
   return `<button class="card" data-open="${it.id}"><div class="ph ${d.own ? 'own' : ''}"><img src="${esc(d.src)}" alt="" loading="lazy">${badge}
     ${busy ? `<div class="busy"><div><div class="spin"></div>${it.status === 'analyzing' ? 'Looking at it…' : 'Finding official photo…'}</div></div>` : ''}</div>
-    <div class="nm">${esc(it.name)}<small>${esc(it.colors[0] || '')}${it.brand ? ' · ' + esc(it.brand) : ''}</small></div></button>`;
+    <div class="nm"><em class="${it.brand ? '' : 'none'}">${esc(it.brand || 'Brand unknown')}</em>${esc(it.name)}<small>${esc(it.colors[0] || '')}${it.catalog && !d.own ? ' · ' + esc(it.catalog.host.replace(/^www\./, '')) : ''}</small></div></button>`;
 }
 function renderTV(app) {
   const w = S.weather, L = S.looks || [];
@@ -380,14 +401,18 @@ function openItem(id) {
       return o.length > 1 ? `<div class="seg" style="grid-template-columns:repeat(${o.length},1fr)">${o.map(([k, v]) => `<button data-p="${k}" class="${it.usePhoto === k ? 'on' : ''}">${v}</button>`).join('')}</div>` : ''; })()}
     ${it.catalog ? `<p class="note">${it.catalog.matchType === 'exact' ? 'Matched' : 'Closest match'} from <a href="${esc(it.catalog.url)}" target="_blank" rel="noopener noreferrer">${esc(it.catalog.host)}</a>${it.catalog.matchType === 'similar' ? '. Not guaranteed to be your exact item, so check it before switching.' : '.'}</p>` : ''}
     ${it.error ? `<p class="note" style="color:var(--warn)">${esc(it.error)}</p>` : ''}
+    <div class="field"><span>Brand / shop</span><input id="e-brand" value="${esc(it.brand || '')}" maxlength="40" placeholder="e.g. Zara, H&amp;M, Nike, Uniqlo">
+      <div class="shops">${['Zara', 'H&M', 'Nike', 'Adidas', 'Uniqlo', 'Muji', 'Mango', 'Massimo Dutti', 'Prada'].map((b) => `<button type="button" data-brand="${esc(b)}" class="${(it.brand || '').toLowerCase() === b.toLowerCase() ? 'on' : ''}">${esc(b)}</button>`).join('')}</div>
+      <p class="note" style="margin-top:6px">Tap the right shop and I will search its website for the official photo.</p></div>
     <label class="field"><span>Name</span><input id="e-name" value="${esc(it.name)}" maxlength="80"></label>
     <label class="field"><span>Type</span><select id="e-cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${it.category === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <div class="row"><button class="btn small" id="e-save">Save</button><button class="btn small ghost" id="e-find" ${busy ? 'disabled' : ''}>${busy ? 'Working…' : 'Find photo again'}</button></div>
     ${tryOK() && !it.cutout ? `<div class="row" style="grid-template-columns:1fr"><button class="btn small ghost" id="e-cut">Clean up my photo (remove background)</button></div>` : ''}
     <div class="row"><button class="btn small danger" id="e-del">Remove</button><button class="btn small ghost" id="e-close">Close</button></div>`);
   $('#sheet').querySelectorAll('[data-p]').forEach((b) => b.onclick = async () => { await api('/items/' + id, { method: 'PATCH', body: { usePhoto: b.dataset.p } }); await refresh(); openItem(id); });
-  $('#e-save').onclick = async () => { await api('/items/' + id, { method: 'PATCH', body: { name: $('#e-name').value, category: $('#e-cat').value } }); await refresh(); closeSheet(); toast('Saved'); };
-  $('#e-find').onclick = async () => { await api('/items/' + id + '/refind', { method: 'POST', body: {} }); await refresh(); closeSheet(); startPoll(); toast('Searching again…'); };
+  $('#sheet').querySelectorAll('[data-brand]').forEach((b) => b.onclick = async () => { $('#e-brand').value = b.dataset.brand; b.disabled = true; try { await api('/items/' + id + '/refind', { method: 'POST', body: { brand: b.dataset.brand } }); await refresh(); closeSheet(); startPoll(); toast('Searching ' + b.dataset.brand + '…'); } catch (e) { toast(e.message); b.disabled = false; } });
+  $('#e-save').onclick = async () => { await api('/items/' + id, { method: 'PATCH', body: { name: $('#e-name').value, category: $('#e-cat').value, brand: $('#e-brand').value } }); await refresh(); closeSheet(); toast('Saved'); };
+  $('#e-find').onclick = async () => { await api('/items/' + id + '/refind', { method: 'POST', body: { brand: $('#e-brand').value } }); await refresh(); closeSheet(); startPoll(); toast('Searching again…'); };
   $('#e-cut')?.addEventListener('click', async (ev) => { ev.target.disabled = true; ev.target.textContent = 'Cleaning up…'; try { await api('/items/' + id + '/cutout', { method: 'POST', body: {} }); await refresh(); openItem(id); toast('Done. Using the clean cutout.'); } catch (e) { toast(e.message, 3500); openItem(id); } });
   $('#e-del').onclick = async () => { if (!confirm('Remove this piece from your closet?')) return; await api('/items/' + id, { method: 'DELETE' }); S.looks = null; await refresh(); closeSheet(); };
   $('#e-close').onclick = closeSheet;
